@@ -12,7 +12,10 @@ if (!databaseUrl) {
 export default defineConfig({
     out: './drizzle',
     schema: [
-        
+        './src/features/User/schemas.ts',
+        './src/features/Project/schemas.ts',
+        './src/features/State/schemas.ts',
+        './src/features/Card/schemas.ts'
     ],
     dialect: 'postgresql',
     dbCredentials: {
