@@ -3,10 +3,12 @@ import {db} from "./db/db_connect";
 import {and, SQL} from "drizzle-orm";
 import {IUserModel} from "./Interfaces/IUserModel";
 import {ICardModel} from "./Interfaces/ICardModel";
+import {IProjectModel} from "./Interfaces/IProjectModel";
 
 export type Models = {
     userModel : IUserModel
     cardModel : ICardModel
+    projectModel : IProjectModel
 };
 
 type QueryBuilder<TQuery> = (keys: TQuery) => SQL[]

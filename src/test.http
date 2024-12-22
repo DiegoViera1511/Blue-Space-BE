@@ -54,3 +54,33 @@ Content-Type: application/json
 
 ###CARD DELETE
 DELETE http://localhost:8080/api/card/813e498d-2ecf-4509-b544-2ccc90fc0802
+
+
+
+
+###PROJECT CREATE
+POST http://localhost:8080/api/project
+Content-Type: application/json
+
+{
+  "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
+  "username": "viera",
+  "name": "ready"
+}
+
+###PROJECT GETALL
+GET http://localhost:8080/api/project
+
+###PROJECT GETBYID
+GET http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
+
+###PROJECT UPDATE
+PUT http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
+Content-Type: application/json
+
+{
+  "name" : "in progress"
+}
+
+###PROJECT DELETE
+DELETE http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
