@@ -2,9 +2,11 @@ import {PgTable} from "drizzle-orm/pg-core";
 import {db} from "./db/db_connect";
 import {and, SQL} from "drizzle-orm";
 import {IUserModel} from "./Interfaces/IUserModel";
+import {ICardModel} from "./Interfaces/ICardModel";
 
 export type Models = {
-   userModel : IUserModel
+    userModel : IUserModel
+    cardModel : ICardModel
 };
 
 type QueryBuilder<TQuery> = (keys: TQuery) => SQL[]

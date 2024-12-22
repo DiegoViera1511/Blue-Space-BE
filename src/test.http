@@ -10,7 +10,6 @@ Content-Type: application/json
 ###USER GETALL
 GET http://localhost:8080/api/user
 
-
 ###USER GETBYID
 GET http://localhost:8080/api/user/viera
 
@@ -24,3 +23,34 @@ Content-Type: application/json
 
 ###USER DELETE
 DELETE http://localhost:8080/api/user/candela
+
+
+
+
+###CARD CREATE
+POST http://localhost:8080/api/card
+Content-Type: application/json
+
+{
+  "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
+  "state_id": "10d0ebca-4d9f-4f25-8684-1c495625a849",
+  "title": "first card",
+  "text": "task description"
+}
+
+###CARD GETALL
+GET http://localhost:8080/api/card
+
+###CARD GETBYID
+GET http://localhost:8080/api/card/813e498d-2ecf-4509-b544-2ccc90fc0802
+
+###CARD UPDATE
+PUT http://localhost:8080/api/card/813e498d-2ecf-4509-b544-2ccc90fc0802
+Content-Type: application/json
+
+{
+  "title" : "fix task"
+}
+
+###CARD DELETE
+DELETE http://localhost:8080/api/card/813e498d-2ecf-4509-b544-2ccc90fc0802
