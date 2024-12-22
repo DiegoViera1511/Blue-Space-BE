@@ -4,11 +4,13 @@ import {and, SQL} from "drizzle-orm";
 import {IUserModel} from "./Interfaces/IUserModel";
 import {ICardModel} from "./Interfaces/ICardModel";
 import {IProjectModel} from "./Interfaces/IProjectModel";
+import {IStateModel} from "./Interfaces/IStateModel";
 
 export type Models = {
     userModel : IUserModel
     cardModel : ICardModel
     projectModel : IProjectModel
+    stateModel: IStateModel
 };
 
 type QueryBuilder<TQuery> = (keys: TQuery) => SQL[]

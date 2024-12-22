@@ -65,7 +65,7 @@ Content-Type: application/json
 {
   "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
   "username": "viera",
-  "name": "ready"
+  "name": "KANBAN"
 }
 
 ###PROJECT GETALL
@@ -79,8 +79,38 @@ PUT http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
 Content-Type: application/json
 
 {
+  "name" : "SCRUM"
+}
+
+
+
+
+###STATE CREATE
+POST http://localhost:8080/api/state
+Content-Type: application/json
+
+{
+  "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
+  "project_id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
+  "name": "ready"
+}
+
+###STATE GETALL
+GET http://localhost:8080/api/state
+
+###STATE GETBYID
+GET http://localhost:8080/api/state/813e498d-2ecf-4509-b544-2ccc90fc0802
+
+###STATE UPDATE
+PUT http://localhost:8080/api/state/813e498d-2ecf-4509-b544-2ccc90fc0802
+Content-Type: application/json
+
+{
   "name" : "in progress"
 }
+
+###STATE DELETE
+DELETE http://localhost:8080/api/state/813e498d-2ecf-4509-b544-2ccc90fc0802
 
 ###PROJECT DELETE
 DELETE http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
