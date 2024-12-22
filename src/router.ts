@@ -1,7 +1,9 @@
 import {Router} from "express";
-// TODO import {Models} from "./types";
+import {Models} from "./types";
+import {userRouter} from "./features/User/router";
 
-export const appRouter = () => {
+export const appRouter = (appModels : Models) => {
     const router = Router();
+    router.use('/user' , userRouter(appModels.userModel));
     return router;
 };

@@ -1,0 +1,26 @@
+###USER CREATE
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+    "username": "viera",
+    "password": "nqSRJTjt"
+}
+
+###USER GETALL
+GET http://localhost:8080/api/user
+
+
+###USER GETBYID
+GET http://localhost:8080/api/user/viera
+
+###USER UPDATE
+PUT http://localhost:8080/api/user/viera
+Content-Type: application/json
+
+{
+  "username" : "candela"
+}
+
+###USER DELETE
+DELETE http://localhost:8080/api/user/candela
