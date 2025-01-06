@@ -3,7 +3,7 @@ POST http://localhost:8080/api/user
 Content-Type: application/json
 
 {
-    "username": "viera",
+    "username": "diego",
     "password": "nqSRJTjt"
 }
 
@@ -63,8 +63,7 @@ POST http://localhost:8080/api/project
 Content-Type: application/json
 
 {
-  "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
-  "username": "viera",
+  "username": "diego",
   "name": "KANBAN"
 }
 

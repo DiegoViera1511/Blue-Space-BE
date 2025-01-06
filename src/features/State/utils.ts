@@ -9,7 +9,6 @@ export type StateQuery = {
 };
 
 export const stateSchema = z.object({
-    id: z.string(),
     project_id: z.string(),
     name: z.string()
 });

@@ -10,7 +10,6 @@ export type CardQuery = {
 };
 
 export const cardSchema = z.object({
-    id: z.string(),
     state_id: z.string(),
     title: z.string(),
     text: z.string()

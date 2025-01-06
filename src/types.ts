@@ -33,8 +33,9 @@ export class CRUD <TQuery>{
         await db.delete(this.table).where(and(...filter));
     }
 
-    async getAll(): Promise<typeof this.table.$inferSelect[]> {
-        return db.select().from(this.table);
+    async getAll(keys: TQuery): Promise<typeof this.table.$inferSelect[]> {
+        const filter = this.QueryBuilder(keys)
+        return db.select().from(this.table).where(and(...filter));
     }
 
     async getById(keys: TQuery): Promise<typeof this.table.$inferSelect> {

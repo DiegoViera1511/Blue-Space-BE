@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import {ErrorMessage, validate, validateUpdate} from "../../utils";
+import {ErrorMessage, validate, validatePartial} from "../../utils";
 import {UserQuery, userSchema} from "./utils";
 import { Request, Response } from 'express';
 import {NewUser, User} from "./schemas";
@@ -28,9 +28,18 @@ export class UserController {
         }
     };
 
-    getAll = async (_req: Request, res: Response) => {
+    getAll = async (req: Request, res: Response) => {
         try {
-            const allUsers = await this.userModel.getAll();
+            const result = validatePartial(req.query, userSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            const userQuery : UserQuery = {
+                username: result.data.username,
+                password: result.data.password
+            }
+            const allUsers = await this.userModel.getAll(userQuery);
             res.status(200).json(allUsers);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -55,7 +64,7 @@ export class UserController {
     update = async (req: Request, res: Response) => {
         try {
             const username = req.params.username;
-            const result = validateUpdate(req.body, userSchema);
+            const result = validatePartial(req.body, userSchema);
             const userQuery: UserQuery = { username: username };
 
             if (!result.success) {
