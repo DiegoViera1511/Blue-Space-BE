@@ -1,4 +1,4 @@
-import {ErrorMessage, validate, validateUpdate} from "../../utils";
+import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import {ICardModel} from "../../Interfaces/ICardModel";
 import {CardQuery, cardSchema} from "./utils";
@@ -26,9 +26,19 @@ export class CardController {
         }
     };
 
-    getAll = async (_req: Request, res: Response) => {
+    getAll = async (req: Request, res: Response) => {
         try {
-            const allCards = await this.cardModel.getAll();
+            const result = validatePartial(req.query, cardSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            const cardQuery : CardQuery = {
+                state_id: result.data.state_id,
+                title: result.data.title,
+                text: result.data.text
+            }
+            const allCards = await this.cardModel.getAll(cardQuery);
             res.status(200).json(allCards);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -53,7 +63,7 @@ export class CardController {
     update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const result = validateUpdate(req.body, cardSchema);
+            const result = validatePartial(req.body, cardSchema);
             const cardQuery: CardQuery = { id: id };
 
             if (!result.success) {

@@ -1,4 +1,4 @@
-import {ErrorMessage, validate, validateUpdate} from "../../utils";
+import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import { StateQuery, stateSchema} from "./utils";
 import { NewState, State} from "./schemas";
@@ -26,9 +26,18 @@ export class StateController {
         }
     };
 
-    getAll = async (_req: Request, res: Response) => {
+    getAll = async (req: Request, res: Response) => {
         try {
-            const allState = await this.stateModel.getAll();
+            const result = validatePartial(req.query, stateSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            const stateQuery : StateQuery = {
+                project_id: result.data.project_id,
+                name: result.data.name
+            }
+            const allState = await this.stateModel.getAll(stateQuery);
             res.status(200).json(allState);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -53,7 +62,7 @@ export class StateController {
     update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const result = validateUpdate(req.body, stateSchema);
+            const result = validatePartial(req.body, stateSchema);
             const stateQuery: StateQuery = { id: id };
 
             if (!result.success) {

@@ -9,7 +9,6 @@ export type ProjectQuery = {
 };
 
 export const projectSchema = z.object({
-    id: z.string(),
     username: z.string(),
     name: z.string()
 });

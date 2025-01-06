@@ -1,4 +1,4 @@
-import {ErrorMessage, validate, validateUpdate} from "../../utils";
+import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import { ProjectQuery, projectSchema} from "./utils";
 import {NewProject, Project} from "./schemas";
@@ -26,9 +26,18 @@ export class ProjectController {
         }
     };
 
-    getAll = async (_req: Request, res: Response) => {
+    getAll = async (req: Request, res: Response) => {
         try {
-            const allProjects = await this.projectModel.getAll();
+            const result = validatePartial(req.query, projectSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            const projectQuery : ProjectQuery = {
+                username: result.data.username,
+                name: result.data.name
+            }
+            const allProjects = await this.projectModel.getAll(projectQuery);
             res.status(200).json(allProjects);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -53,7 +62,7 @@ export class ProjectController {
     update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const result = validateUpdate(req.body, projectSchema);
+            const result = validatePartial(req.body, projectSchema);
             const projectQuery: ProjectQuery = { id: id };
 
             if (!result.success) {
