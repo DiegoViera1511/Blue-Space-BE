@@ -13,5 +13,7 @@ export const userRouter = (userModel: IUserModel) => {
         .get(userController.getById)
         .put(userController.update)
         .delete(userController.delete);
+    router.route('/token/checktoken').get(userController.getUserByToken);
+    router.route('/checklogin').post(userController.userLogIn);
     return router;
 };
