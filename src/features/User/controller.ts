@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import {ErrorMessage, validate, validatePartial} from "../../utils";
-import {UserQuery, userSchema} from "./utils";
+import {createToken, isValidToken, UserQuery, userSchema} from "./utils";
 import { Request, Response } from 'express';
 import {NewUser, User} from "./schemas";
 import {IUserModel} from "../../Interfaces/IUserModel";
@@ -99,4 +99,45 @@ export class UserController {
             res.status(500).json(ErrorMessage(e));
         }
     };
+
+    getUserByToken = async (req: Request, res: Response) => {
+        try {
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token) {
+                res.status(404).json({message: 'Token not found'});
+                return;
+            }
+            const user = await this.userModel.getUserByToken(token);
+            if (!user) {
+                res.status(404).json({message: 'User not found'});
+                return;
+            }
+            isValidToken(token);
+            res.status(200).json(user);
+        } catch (e) {
+            res.status(400).json({message: (e instanceof Error) ? e.message : 'An unknown error occurred'});
+        }
+    }
+
+    userLogIn = async (req: Request, res: Response) => {
+        const result = validate(req.body, userSchema);
+        if (!result.success) {
+            res.status(400).json({ message: JSON.parse(result.error.message) });
+            return;
+        }
+        const userQuery: UserQuery = {username: result.data.username}
+        const userData = await this.userModel.getById(userQuery);
+        if (!userData) {
+            res.status(404).json({message: 'User not found'});
+            return;
+        }
+        const isCorrect: boolean = await bcrypt.compare(result.data.password, userData.password as string);
+        if (!isCorrect) {
+            res.status(404).json({message: 'Password is incorrect'});
+            return;
+        }
+        const token = createToken(result.data.username);
+        await this.userModel.update(userQuery, {token: token});
+        res.status(200).json(token);
+    }
 }
