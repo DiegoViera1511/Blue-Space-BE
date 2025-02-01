@@ -4,7 +4,7 @@ import {user} from "../User/schemas";
 
 export const project = pgTable('project', {
     id: uuid('id').primaryKey().defaultRandom(),
-    username: varchar('username').references(() => user.username, { onDelete: 'cascade' }).notNull(),
+    username: varchar('username').references(() => user.username, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
     name: varchar('name', { length: 255 }).notNull(),
 });
 

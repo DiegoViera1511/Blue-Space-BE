@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import {createToken, isValidToken, UserQuery, userSchema} from "./utils";
 import { Request, Response } from 'express';
-import {NewUser, User} from "./schemas";
+import {NewUser, user, User} from "./schemas";
 import {IUserModel} from "../../Interfaces/IUserModel";
 
 export class UserController {
@@ -39,7 +39,7 @@ export class UserController {
                 username: result.data.username,
                 password: result.data.password
             }
-            const allUsers = await this.userModel.getAll(userQuery);
+            const allUsers = await this.userModel.getAll(userQuery,user.username);
             res.status(200).json(allUsers);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));

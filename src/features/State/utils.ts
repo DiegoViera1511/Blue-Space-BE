@@ -4,11 +4,13 @@ import z from 'zod';
 
 export type StateQuery = {
     id?: string;
+    position?: number;
     project_id?: string;
     name?: string;
 };
 
 export const stateSchema = z.object({
+    position: z.number(),
     project_id: z.string(),
     name: z.string()
 });
@@ -16,6 +18,7 @@ export const stateSchema = z.object({
 export function StateQueryBuilder(query: StateQuery): SQL[] {
     const filters: SQL[] = [];
     if (query.id) filters.push(eq(state.id, query.id));
+    if (query.position) filters.push(eq(state.position, query.position));
     if (query.project_id) filters.push(eq(state.project_id, query.project_id));
     if (query.name) filters.push(eq(state.name,query.name));
     return filters;

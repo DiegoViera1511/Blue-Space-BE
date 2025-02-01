@@ -1,7 +1,7 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import { StateQuery, stateSchema} from "./utils";
-import { NewState, State} from "./schemas";
+import {NewState, state, State} from "./schemas";
 import {IStateModel} from "../../Interfaces/IStateModel";
 
 export class StateController {
@@ -37,7 +37,7 @@ export class StateController {
                 project_id: result.data.project_id,
                 name: result.data.name
             }
-            const allState = await this.stateModel.getAll(stateQuery);
+            const allState = await this.stateModel.getAll(stateQuery,state.position);
             res.status(200).json(allState);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));

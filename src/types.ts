@@ -1,6 +1,6 @@
-import {PgTable} from "drizzle-orm/pg-core";
+import {PgColumn, PgTable} from "drizzle-orm/pg-core";
 import {db} from "./db/db_connect";
-import {and, SQL} from "drizzle-orm";
+import {and, asc, SQL} from "drizzle-orm";
 import {IUserModel} from "./Interfaces/IUserModel";
 import {ICardModel} from "./Interfaces/ICardModel";
 import {IProjectModel} from "./Interfaces/IProjectModel";
@@ -33,9 +33,9 @@ export class CRUD <TQuery>{
         await db.delete(this.table).where(and(...filter));
     }
 
-    async getAll(keys: TQuery): Promise<typeof this.table.$inferSelect[]> {
+    async getAll(keys: TQuery , order: PgColumn): Promise<typeof this.table.$inferSelect[]> {
         const filter = this.QueryBuilder(keys)
-        return db.select().from(this.table).where(and(...filter));
+        return db.select().from(this.table).where(and(...filter)).orderBy(asc(order));
     }
 
     async getById(keys: TQuery): Promise<typeof this.table.$inferSelect> {

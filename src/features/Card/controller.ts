@@ -2,7 +2,7 @@ import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import {ICardModel} from "../../Interfaces/ICardModel";
 import {CardQuery, cardSchema} from "./utils";
-import {Card, NewCard} from "./schemas";
+import {card, Card, NewCard} from "./schemas";
 
 export class CardController {
     cardModel: ICardModel;
@@ -38,7 +38,7 @@ export class CardController {
                 title: result.data.title,
                 text: result.data.text
             }
-            const allCards = await this.cardModel.getAll(cardQuery);
+            const allCards = await this.cardModel.getAll(cardQuery,card.position);
             res.status(200).json(allCards);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));

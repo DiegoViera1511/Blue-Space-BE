@@ -11,7 +11,7 @@ export class UserModel extends CRUD<UserQuery> implements IUserModel {
     }
 
     async getUserByToken(token: string): Promise<User | undefined> {
-        const result = await db.select().from(user).where(eq(user.token, token));
+        const result = await db.select().from(user).where(eq(user.token, token)).limit(1);
         if(!result.length) return undefined;
         return result[0];
     }
