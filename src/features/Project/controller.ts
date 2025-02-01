@@ -1,7 +1,7 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import { ProjectQuery, projectSchema} from "./utils";
-import {NewProject, Project} from "./schemas";
+import {NewProject, project, Project} from "./schemas";
 import {IProjectModel} from "../../Interfaces/IProjectModel";
 
 export class ProjectController {
@@ -37,7 +37,7 @@ export class ProjectController {
                 username: result.data.username,
                 name: result.data.name
             }
-            const allProjects = await this.projectModel.getAll(projectQuery);
+            const allProjects = await this.projectModel.getAll(projectQuery,project.name);
             res.status(200).json(allProjects);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
