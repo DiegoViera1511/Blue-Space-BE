@@ -17,6 +17,12 @@ export const cardSchema = z.object({
     text: z.string()
 });
 
+export const cardPositionUpdateGteSchema = z.object({
+    start: z.number(),
+    value: z.number(),
+    state_id: z.string()
+})
+
 export function CardQueryBuilder(query: CardQuery): SQL[] {
     const filters: SQL[] = [];
     if (query.id) filters.push(eq(card.id, query.id));

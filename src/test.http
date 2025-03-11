@@ -3,7 +3,7 @@ POST http://localhost:8080/api/user
 Content-Type: application/json
 
 {
-    "username": "diego",
+    "username": "viera",
     "password": "nqSRJTjt"
 }
 
@@ -32,8 +32,8 @@ POST http://localhost:8080/api/card
 Content-Type: application/json
 
 {
-  "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
-  "state_id": "10d0ebca-4d9f-4f25-8684-1c495625a849",
+  "position": 2,
+  "state_id": "476ed911-152c-4926-b492-632f55b6e06f",
   "title": "first card",
   "text": "task description"
 }
@@ -50,6 +50,17 @@ Content-Type: application/json
 
 {
   "title" : "fix task"
+}
+
+###CARD POSITION
+
+PUT http://localhost:8080/api/card/position
+Content-Type: application/json
+
+{
+  "start": 0,
+  "value": 1,
+  "state_id": "40d352f4-2d49-4b56-887c-15b7aa70a669"
 }
 
 ###CARD DELETE
@@ -89,8 +100,8 @@ POST http://localhost:8080/api/state
 Content-Type: application/json
 
 {
-  "id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
-  "project_id": "813e498d-2ecf-4509-b544-2ccc90fc0802",
+  "position": 2,
+  "project_id": "057b1cb2-b038-42bc-a62d-480b0bb4ffa2",
   "name": "ready"
 }
 

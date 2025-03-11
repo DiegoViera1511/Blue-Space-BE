@@ -1,9 +1,8 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import {ICardModel} from "../../Interfaces/ICardModel";
-import {CardQuery, cardSchema} from "./utils";
+import {cardPositionUpdateGteSchema, CardQuery, cardSchema} from "./utils";
 import {card, Card, NewCard} from "./schemas";
-
 export class CardController {
     cardModel: ICardModel;
     constructor(cardModel: ICardModel) {
@@ -98,4 +97,18 @@ export class CardController {
             res.status(500).json(ErrorMessage(e));
         }
     };
+    
+    updateCardsPositionGte = async (req: Request, res: Response) => {
+        try {
+            const result = validate(req.body, cardPositionUpdateGteSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            await this.cardModel.updateCardsPositionGte(result.data.start, result.data.value, result.data.state_id);
+            res.status(200).json({ message: 'Cards position updated successfully' });
+        } catch (e) {
+            res.status(500).json(ErrorMessage(e));
+        }
+    }
 }
