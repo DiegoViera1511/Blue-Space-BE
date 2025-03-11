@@ -1,7 +1,13 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import {ICardModel} from "../../Interfaces/ICardModel";
-import {cardPositionUpdateGteSchema, cardPositionUpdateRangeSchema, CardQuery, cardSchema} from "./utils";
+import {
+    cardPositionUpdateGteSchema,
+    cardPositionUpdateRangeSchema,
+    CardQuery,
+    cardSchema,
+    updateCardsPositionsSchema, updateCardStateSchema
+} from "./utils";
 import {card, Card, NewCard} from "./schemas";
 export class CardController {
     cardModel: ICardModel;
@@ -125,4 +131,42 @@ export class CardController {
             res.status(500).json(ErrorMessage(e));
         }
     }
+    
+    updateCardsPositions = async (req: Request, res: Response) => {
+        try {
+            const result = validate(req.body, updateCardsPositionsSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            const cardQuery: CardQuery = { id: result.data.activeCardId };
+            if (result.data.activePosition > result.data.overPosition){
+                await this.cardModel.updateCardsPositionRange(result.data.overPosition, result.data.activePosition - 1, 1, result.data.state_id);
+                await this.cardModel.update(cardQuery,{ position: result.data.overPosition });
+            }else if (result.data.activePosition < result.data.overPosition){
+                await this.cardModel.updateCardsPositionRange(result.data.activePosition + 1, result.data.overPosition, -1, result.data.state_id);
+                await this.cardModel.update(cardQuery,{ position: result.data.overPosition });
+            }
+            res.status(200).json({ message: 'Cards positions updated successfully' });
+        }catch (e) {
+            res.status(500).json(ErrorMessage(e));
+        }
+    }
+    updateCardState = async (req: Request, res: Response) => {
+        try {
+            const result = validate(req.body, updateCardStateSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            const cardQuery: CardQuery = { id: result.data.activeCardId };
+            await this.cardModel.updateCardsPositionGte(result.data.activePosition + 1, -1, result.data.activeStateId);
+            await this.cardModel.updateCardsPositionGte(result.data.overPosition, 1, result.data.overStateId);
+            await this.cardModel.update(cardQuery,{ state_id: result.data.overStateId, position: result.data.overPosition });
+            res.status(200).json({ message: 'Card state updated successfully' });
+        }catch (e) {
+            res.status(500).json(ErrorMessage(e));
+        }
+    }
+    
 }
