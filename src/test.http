@@ -52,13 +52,25 @@ Content-Type: application/json
   "title" : "fix task"
 }
 
-###CARD POSITION
+###CARD POSITION GTE
 
-PUT http://localhost:8080/api/card/position
+PUT http://localhost:8080/api/card/positionGte
 Content-Type: application/json
 
 {
   "start": 0,
+  "value": 1,
+  "state_id": "40d352f4-2d49-4b56-887c-15b7aa70a669"
+}
+
+###CARD POSITION RANGE
+
+PUT http://localhost:8080/api/card/positionRange
+Content-Type: application/json
+
+{
+  "start": 2,
+  "end": 4,
   "value": 1,
   "state_id": "40d352f4-2d49-4b56-887c-15b7aa70a669"
 }

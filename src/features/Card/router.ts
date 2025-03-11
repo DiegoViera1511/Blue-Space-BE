@@ -6,7 +6,8 @@ export const cardRouter = (cardModel: ICardModel) => {
     const router = Router();
 
     const cardController = new CardController(cardModel);
-    router.route('/position').put(cardController.updateCardsPositionGte);
+    router.route('/positionGte').put(cardController.updateCardsPositionGte);
+    router.route('/positionRange').put(cardController.updateCardsPositionRange);
     router.route('/').post(cardController.create).get(cardController.getAll);
     router
         .route('/:id')

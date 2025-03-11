@@ -1,7 +1,7 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import { Request, Response } from 'express';
 import {ICardModel} from "../../Interfaces/ICardModel";
-import {cardPositionUpdateGteSchema, CardQuery, cardSchema} from "./utils";
+import {cardPositionUpdateGteSchema, cardPositionUpdateRangeSchema, CardQuery, cardSchema} from "./utils";
 import {card, Card, NewCard} from "./schemas";
 export class CardController {
     cardModel: ICardModel;
@@ -106,6 +106,20 @@ export class CardController {
                 return;
             }
             await this.cardModel.updateCardsPositionGte(result.data.start, result.data.value, result.data.state_id);
+            res.status(200).json({ message: 'Cards position updated successfully' });
+        } catch (e) {
+            res.status(500).json(ErrorMessage(e));
+        }
+    }
+
+    updateCardsPositionRange = async (req: Request, res: Response) => {
+        try {
+            const result = validate(req.body, cardPositionUpdateRangeSchema);
+            if (!result.success) {
+                res.status(400).json({ message: JSON.parse(result.error.message) });
+                return;
+            }
+            await this.cardModel.updateCardsPositionRange(result.data.start,result.data.end ,result.data.value, result.data.state_id);
             res.status(200).json({ message: 'Cards position updated successfully' });
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
