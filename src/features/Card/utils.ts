@@ -17,6 +17,34 @@ export const cardSchema = z.object({
     text: z.string()
 });
 
+export const cardPositionUpdateGteSchema = z.object({
+    start: z.number(),
+    value: z.number(),
+    state_id: z.string()
+})
+
+export const cardPositionUpdateRangeSchema = z.object({
+    start: z.number(),
+    end: z.number(),
+    value: z.number(),
+    state_id: z.string()
+})
+
+export const updateCardsPositionsSchema = z.object({
+    activePosition: z.number(),
+    overPosition: z.number(),
+    state_id: z.string(),
+    activeCardId: z.string()
+})
+
+export const updateCardStateSchema = z.object({
+    activePosition: z.number(),
+    overPosition: z.number(),
+    activeStateId: z.string(),
+    overStateId: z.string(),
+    activeCardId: z.string()
+})
+
 export function CardQueryBuilder(query: CardQuery): SQL[] {
     const filters: SQL[] = [];
     if (query.id) filters.push(eq(card.id, query.id));

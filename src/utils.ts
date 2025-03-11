@@ -11,3 +11,4 @@ export function validatePartial<T extends ZodRawShape>(object: any, schema: ZodO
 export const ErrorMessage = (e: any) => {
     return { message: e instanceof Error ? e.message : 'An unknown error occurred' };
 };
+
