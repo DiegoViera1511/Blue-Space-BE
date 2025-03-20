@@ -1,19 +1,21 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
-import { Request, Response } from 'express';
-import { StateQuery, stateSchema} from "./utils";
+import {Request, Response} from 'express';
+import {StateQuery, stateSchema} from "./utils";
 import {NewState, state, State} from "./schemas";
 import {IStateModel} from "../../Interfaces/IStateModel";
 
 export class StateController {
     stateModel: IStateModel;
+
     constructor(stateModel: IStateModel) {
         this.stateModel = stateModel;
     }
+
     create = async (req: Request, res: Response) => {
         try {
             const result = validate(req.body, stateSchema);
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
             const stateData: NewState = {
@@ -30,14 +32,14 @@ export class StateController {
         try {
             const result = validatePartial(req.query, stateSchema);
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
-            const stateQuery : StateQuery = {
+            const stateQuery: StateQuery = {
                 project_id: result.data.project_id,
                 name: result.data.name
             }
-            const allState = await this.stateModel.getAll(stateQuery,state.position);
+            const allState = await this.stateModel.getAll(stateQuery, state.position, true);
             res.status(200).json(allState);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -47,11 +49,11 @@ export class StateController {
     getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const stateQuery : StateQuery = { id: id };
+            const stateQuery: StateQuery = {id: id};
 
             const stateFound = await this.stateModel.getById(stateQuery);
             if (!stateFound) {
-                res.status(404).json({ message: 'Status not found' });
+                res.status(404).json({message: 'Status not found'});
                 return;
             }
             res.status(200).json(stateFound);
@@ -63,16 +65,16 @@ export class StateController {
         try {
             const id = req.params.id;
             const result = validatePartial(req.body, stateSchema);
-            const stateQuery: StateQuery = { id: id };
+            const stateQuery: StateQuery = {id: id};
 
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
-            const stateData: Partial<State> = { ...result.data };
+            const stateData: Partial<State> = {...result.data};
             const stateFound = await this.stateModel.getById(stateQuery);
             if (!stateFound) {
-                res.status(404).json({ message: 'State not found' });
+                res.status(404).json({message: 'State not found'});
                 return;
             }
             const updatedState = await this.stateModel.update(stateQuery, stateData);
@@ -85,14 +87,14 @@ export class StateController {
     delete = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const stateQuery: StateQuery = { id: id };
+            const stateQuery: StateQuery = {id: id};
             const stateFound = await this.stateModel.getById(stateQuery);
             if (!stateFound) {
-                res.status(404).json({ message: 'State not found' });
+                res.status(404).json({message: 'State not found'});
                 return;
             }
             await this.stateModel.delete(stateQuery);
-            res.status(200).json({ message: 'State deleted successfully' });
+            res.status(200).json({message: 'State deleted successfully'});
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
         }

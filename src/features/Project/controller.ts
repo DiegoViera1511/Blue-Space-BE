@@ -1,25 +1,30 @@
 import {ErrorMessage, validate, validatePartial} from "../../utils";
-import { Request, Response } from 'express';
-import { ProjectQuery, projectSchema} from "./utils";
+import {Request, Response} from 'express';
+import {ProjectQuery, projectSchema} from "./utils";
 import {NewProject, project, Project} from "./schemas";
 import {IProjectModel} from "../../Interfaces/IProjectModel";
+import {IUsersToProjectsModel} from "../../Interfaces/IUsersToProjects";
 
 export class ProjectController {
     projectModel: IProjectModel;
-    constructor(projectModel: IProjectModel) {
+    usersToProjectsModel: IUsersToProjectsModel
+
+    constructor(projectModel: IProjectModel, usersToProjectsModel: IUsersToProjectsModel) {
         this.projectModel = projectModel;
+        this.usersToProjectsModel = usersToProjectsModel;
     }
+
     create = async (req: Request, res: Response) => {
         try {
             const result = validate(req.body, projectSchema);
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
             const projectData: NewProject = {
                 ...result.data
             };
-            const newProject = await this.projectModel.create(projectData);
+            const newProject = await this.projectModel.create(projectData)
             res.status(201).json(newProject);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -30,14 +35,14 @@ export class ProjectController {
         try {
             const result = validatePartial(req.query, projectSchema);
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
-            const projectQuery : ProjectQuery = {
+            const projectQuery: ProjectQuery = {
                 username: result.data.username,
                 name: result.data.name
             }
-            const allProjects = await this.projectModel.getAll(projectQuery,project.name);
+            const allProjects = await this.projectModel.getAll(projectQuery, project.name, true);
             res.status(200).json(allProjects);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -47,11 +52,11 @@ export class ProjectController {
     getById = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const projectQuery : ProjectQuery = { id: id };
+            const projectQuery: ProjectQuery = {id: id};
 
             const projectFound = await this.projectModel.getById(projectQuery);
             if (!projectFound) {
-                res.status(404).json({ message: 'Project not found' });
+                res.status(404).json({message: 'Project not found'});
                 return;
             }
             res.status(200).json(projectFound);
@@ -63,16 +68,16 @@ export class ProjectController {
         try {
             const id = req.params.id;
             const result = validatePartial(req.body, projectSchema);
-            const projectQuery: ProjectQuery = { id: id };
+            const projectQuery: ProjectQuery = {id: id};
 
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
-            const projectData: Partial<Project> = { ...result.data };
+            const projectData: Partial<Project> = {...result.data};
             const projectFound = await this.projectModel.getById(projectQuery);
             if (!projectFound) {
-                res.status(404).json({ message: 'Project not found' });
+                res.status(404).json({message: 'Project not found'});
                 return;
             }
             const updatedProject = await this.projectModel.update(projectQuery, projectData);
@@ -85,14 +90,14 @@ export class ProjectController {
     delete = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const projectQuery: ProjectQuery = { id: id };
+            const projectQuery: ProjectQuery = {id: id};
             const projectFound = await this.projectModel.getById(projectQuery);
             if (!projectFound) {
-                res.status(404).json({ message: 'Project not found' });
+                res.status(404).json({message: 'Project not found'});
                 return;
             }
             await this.projectModel.delete(projectQuery);
-            res.status(200).json({ message: 'Project deleted successfully' });
+            res.status(200).json({message: 'Project deleted successfully'});
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
         }

@@ -4,8 +4,14 @@ import {project} from "./schemas";
 
 export type ProjectQuery = {
     id?: string;
-    username?:string;
-    name?:string;
+    username?: string;
+    name?: string;
+};
+
+export type ProjectDto = {
+    id: string;
+    username: string;
+    name: string;
 };
 
 export const projectSchema = z.object({

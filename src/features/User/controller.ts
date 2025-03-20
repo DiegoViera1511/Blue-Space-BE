@@ -1,20 +1,22 @@
 import bcrypt from 'bcrypt';
 import {ErrorMessage, validate, validatePartial} from "../../utils";
 import {createToken, isValidToken, UserQuery, userSchema} from "./utils";
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import {NewUser, user, User} from "./schemas";
 import {IUserModel} from "../../Interfaces/IUserModel";
 
 export class UserController {
     userModel: IUserModel;
+
     constructor(userModel: IUserModel) {
         this.userModel = userModel;
     }
+
     create = async (req: Request, res: Response) => {
         try {
             const result = validate(req.body, userSchema);
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
             const userData: NewUser = {
@@ -32,14 +34,14 @@ export class UserController {
         try {
             const result = validatePartial(req.query, userSchema);
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
-            const userQuery : UserQuery = {
+            const userQuery: UserQuery = {
                 username: result.data.username,
                 password: result.data.password
             }
-            const allUsers = await this.userModel.getAll(userQuery,user.username);
+            const allUsers = await this.userModel.getAll(userQuery, user.username, true);
             res.status(200).json(allUsers);
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
@@ -49,11 +51,11 @@ export class UserController {
     getById = async (req: Request, res: Response) => {
         try {
             const username = req.params.username;
-            const userQuery: UserQuery = { username: username };
+            const userQuery: UserQuery = {username: username};
 
             const userFound = await this.userModel.getById(userQuery);
             if (!userFound) {
-                res.status(404).json({ message: 'User not found' });
+                res.status(404).json({message: 'User not found'});
                 return;
             }
             res.status(200).json(userFound);
@@ -65,16 +67,16 @@ export class UserController {
         try {
             const username = req.params.username;
             const result = validatePartial(req.body, userSchema);
-            const userQuery: UserQuery = { username: username };
+            const userQuery: UserQuery = {username: username};
 
             if (!result.success) {
-                res.status(400).json({ message: JSON.parse(result.error.message) });
+                res.status(400).json({message: JSON.parse(result.error.message)});
                 return;
             }
-            const userData: Partial<User> = { ...result.data };
+            const userData: Partial<User> = {...result.data};
             const userFound = await this.userModel.getById(userQuery);
             if (!userFound) {
-                res.status(404).json({ message: 'User not found' });
+                res.status(404).json({message: 'User not found'});
                 return;
             }
             const updatedUser = await this.userModel.update(userQuery, userData);
@@ -87,14 +89,14 @@ export class UserController {
     delete = async (req: Request, res: Response) => {
         try {
             const username = req.params.username;
-            const userQuery: UserQuery = { username: username };
+            const userQuery: UserQuery = {username: username};
             const userFound = await this.userModel.getById(userQuery);
             if (!userFound) {
-                res.status(404).json({ message: 'User not found' });
+                res.status(404).json({message: 'User not found'});
                 return;
             }
             await this.userModel.delete(userQuery);
-            res.status(200).json({ message: 'User deleted successfully' });
+            res.status(200).json({message: 'User deleted successfully'});
         } catch (e) {
             res.status(500).json(ErrorMessage(e));
         }
@@ -122,7 +124,7 @@ export class UserController {
     userLogIn = async (req: Request, res: Response) => {
         const result = validate(req.body, userSchema);
         if (!result.success) {
-            res.status(400).json({ message: JSON.parse(result.error.message) });
+            res.status(400).json({message: JSON.parse(result.error.message)});
             return;
         }
         const userQuery: UserQuery = {username: result.data.username}
