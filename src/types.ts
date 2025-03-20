@@ -1,29 +1,34 @@
 import {PgColumn, PgTable} from "drizzle-orm/pg-core";
 import {db} from "./db/db_connect";
-import {and, asc, SQL} from "drizzle-orm";
+import {and, asc, desc, SQL} from "drizzle-orm";
 import {IUserModel} from "./Interfaces/IUserModel";
 import {ICardModel} from "./Interfaces/ICardModel";
 import {IProjectModel} from "./Interfaces/IProjectModel";
 import {IStateModel} from "./Interfaces/IStateModel";
+import {INotificationModel} from "./Interfaces/INotificationModel";
+import {IUsersToProjectsModel} from "./Interfaces/IUsersToProjects";
 
 export type Models = {
-    userModel : IUserModel
-    cardModel : ICardModel
-    projectModel : IProjectModel
-    stateModel: IStateModel
+    userModel: IUserModel,
+    cardModel: ICardModel,
+    projectModel: IProjectModel,
+    stateModel: IStateModel,
+    notificationModel: INotificationModel,
+    usersToProjectsModel: IUsersToProjectsModel
 };
 
 type QueryBuilder<TQuery> = (keys: TQuery) => SQL[]
 
-export class CRUD <TQuery>{
-    private table : PgTable
-    private QueryBuilder : QueryBuilder<TQuery>
-    constructor(table : PgTable , QueryBuilder : QueryBuilder<TQuery>){ 
+export class CRUD<TQuery> {
+    private table: PgTable
+    private QueryBuilder: QueryBuilder<TQuery>
+
+    constructor(table: PgTable, QueryBuilder: QueryBuilder<TQuery>) {
         this.table = table
         this.QueryBuilder = QueryBuilder
     }
-    
-    async create(newObject : typeof this.table.$inferInsert): Promise<typeof this.table.$inferSelect> {
+
+    async create(newObject: typeof this.table.$inferInsert): Promise<typeof this.table.$inferSelect> {
         const created = await db.insert(this.table).values(newObject).returning();
         return created[0];
     }
@@ -33,9 +38,9 @@ export class CRUD <TQuery>{
         await db.delete(this.table).where(and(...filter));
     }
 
-    async getAll(keys: TQuery , order: PgColumn): Promise<typeof this.table.$inferSelect[]> {
-        const filter = this.QueryBuilder(keys)
-        return db.select().from(this.table).where(and(...filter)).orderBy(asc(order));
+    async getAll(query: TQuery, order: PgColumn, ascDir: boolean): Promise<typeof this.table.$inferSelect[]> {
+        const filter = this.QueryBuilder(query)
+        return db.select().from(this.table).where(and(...filter)).orderBy(ascDir ? asc(order) : desc(order));
     }
 
     async getById(keys: TQuery): Promise<typeof this.table.$inferSelect> {

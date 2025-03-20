@@ -3,3 +3,5 @@ build
 drizzle
 .env
 .idea
+
+src/test.http

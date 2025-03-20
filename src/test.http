@@ -136,3 +136,7 @@ DELETE http://localhost:8080/api/state/813e498d-2ecf-4509-b544-2ccc90fc0802
 
 ###PROJECT DELETE
 DELETE http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
+
+### USERTOPROJECT
+
+GET http://localhost:8080/api/usersToProjects
