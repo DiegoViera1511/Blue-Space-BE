@@ -19,7 +19,8 @@ export const userToProjectsSelection = {
     project: {
         id: usersToProjects.project_id,
         username: project.username,
-        name: project.name
+        name: project.name,
+        color: project.color,
     }
 }
 
