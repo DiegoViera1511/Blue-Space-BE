@@ -8,13 +8,15 @@ export type CardQuery = {
     state_id?:string;
     title?:string;
     text?:string;
+    user_card?:string
 };
 
 export const cardSchema = z.object({
     position: z.number(),
     state_id: z.string(),
     title: z.string(),
-    text: z.string()
+    text: z.string(),
+    user_card: z.string().nullable()
 });
 
 export const cardPositionUpdateGteSchema = z.object({
@@ -52,5 +54,6 @@ export function CardQueryBuilder(query: CardQuery): SQL[] {
     if (query.state_id) filters.push(eq(card.state_id, query.state_id));
     if (query.title) filters.push(eq(card.title, query.title));
     if (query.text) filters.push(eq(card.text,query.text));
+    if (query.user_card) filters.push(eq(card.user_card, query.user_card));
     return filters;
 }
