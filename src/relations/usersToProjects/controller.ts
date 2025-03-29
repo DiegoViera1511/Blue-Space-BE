@@ -1,6 +1,6 @@
-import {IUsersToProjectsModel} from "../../Interfaces/IUsersToProjects";
+import {IUsersToProjectsModel} from "../../interfaces/IUsersToProjects";
 import {Request, Response} from "express";
-import {ErrorMessage, validate, validatePartial} from "../../utils";
+import {APIMessage, ErrorMessage, StatusCode, StatusMessage, validate, validatePartial} from "../../utils";
 import {UsersToProjectsQuery, usersToProjectsSchema} from "./utils";
 import {NewUsersToProjects, UsersToProjects, usersToProjects} from "./schemas";
 
@@ -13,119 +13,108 @@ export class UsersToProjectsController {
 
     create = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, usersToProjectsSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, usersToProjectsSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const userToProjectsData: NewUsersToProjects = {
-                ...result.data
-            };
+            const userToProjectsData: NewUsersToProjects = {...data};
             const newUserToProjects = await this.usersToProjectsModel.create(userToProjectsData);
-            res.status(201).json(newUserToProjects)
+            res.status(StatusCode.CREATED).json(newUserToProjects)
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     getAll = async (req: Request, res: Response) => {
         try {
-            const result = validatePartial(req.query, usersToProjectsSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validatePartial(req.query, usersToProjectsSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const usersToProjectsQuery: UsersToProjectsQuery = {
-                ...result.data
-            }
+            const usersToProjectsQuery: UsersToProjectsQuery = {...data}
             const allUsersToProjects = await this.usersToProjectsModel.getAll(usersToProjectsQuery, usersToProjects.username, true);
-            res.status(200).json(allUsersToProjects);
+            res.status(StatusCode.OK).json(allUsersToProjects);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     getAllDto = async (req: Request, res: Response) => {
         try {
-            const result = validatePartial(req.query, usersToProjectsSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validatePartial(req.query, usersToProjectsSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const usersToProjectsQuery: UsersToProjectsQuery = {
-                ...result.data
-            }
+            const usersToProjectsQuery: UsersToProjectsQuery = {...data}
             const allUsersToProjects = await this.usersToProjectsModel.getAllDto(usersToProjectsQuery);
-            res.status(200).json(allUsersToProjects);
+            res.status(StatusCode.OK).json(allUsersToProjects);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     getById = async (req: Request, res: Response) => {
         try {
-            const username = req.params.username;
-            const project_id = req.params.project_id;
+            const {username, project_id} = req.params;
             const usersToProjectsQuery: UsersToProjectsQuery = {
                 username: username,
                 project_id: project_id
             }
             const userToProjectsFound = await this.usersToProjectsModel.getById(usersToProjectsQuery);
             if (!userToProjectsFound) {
-                res.status(404).json({message: 'User to project not found'});
+                res.status(StatusCode.NOT_FOUND).json(StatusMessage.NOT_FOUND);
                 return;
             }
-            res.status(200).json(userToProjectsFound);
+            res.status(StatusCode.OK).json(userToProjectsFound);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     update = async (req: Request, res: Response) => {
         try {
-            const username = req.params.username;
-            const project_id = req.params.project_id;
-            const result = validatePartial(req.body, usersToProjectsSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {username, project_id} = req.params;
+            const {data, success, error} = validatePartial(req.body, usersToProjectsSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
             const usersToProjectsQuery: UsersToProjectsQuery = {
                 username: username,
                 project_id: project_id
             }
-            const usersToProjectsData: Partial<UsersToProjects> = {
-                ...result.data
-            }
+            const usersToProjectsData: Partial<UsersToProjects> = {...data}
             const userToProjectsFound = await this.usersToProjectsModel.getById(usersToProjectsQuery);
             if (!userToProjectsFound) {
-                res.status(404).json({message: 'User to project not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             const updatedUserToProjects = await this.usersToProjectsModel.update(usersToProjectsQuery, usersToProjectsData);
-            res.status(200).json(updatedUserToProjects);
+            res.status(StatusCode.OK).json(updatedUserToProjects);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     delete = async (req: Request, res: Response) => {
         try {
-            const username = req.params.username;
-            const project_id = req.params.project_id;
+            const {username, project_id} = req.params;
             const usersToProjectsQuery: UsersToProjectsQuery = {
                 username: username,
                 project_id: project_id
             }
             const userToProjectsFound = await this.usersToProjectsModel.getById(usersToProjectsQuery);
             if (!userToProjectsFound) {
-                res.status(404).json({message: 'User to project not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             await this.usersToProjectsModel.delete(usersToProjectsQuery);
-            res.status(200).json({message: 'User to project deleted successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.DELETED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 

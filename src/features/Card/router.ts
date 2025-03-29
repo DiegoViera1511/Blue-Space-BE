@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {ICardModel} from "../../Interfaces/ICardModel";
+import {ICardModel} from "../../interfaces/ICardModel";
 import {CardController} from "./controller";
 
 export const cardRouter = (cardModel: ICardModel) => {
@@ -16,6 +16,6 @@ export const cardRouter = (cardModel: ICardModel) => {
         .get(cardController.getById)
         .put(cardController.update)
         .delete(cardController.delete);
-    
+
     return router;
 };

@@ -20,6 +20,6 @@ export function StateQueryBuilder(query: StateQuery): SQL[] {
     if (query.id) filters.push(eq(state.id, query.id));
     if (query.position) filters.push(eq(state.position, query.position));
     if (query.project_id) filters.push(eq(state.project_id, query.project_id));
-    if (query.name) filters.push(eq(state.name,query.name));
+    if (query.name) filters.push(eq(state.name, query.name));
     return filters;
 }

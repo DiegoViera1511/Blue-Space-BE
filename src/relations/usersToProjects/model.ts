@@ -1,6 +1,6 @@
-import {CRUD} from "../../types";
+import {CRUD} from "../../general/crud";
 import {UsersToProjectsDto, UsersToProjectsQuery, UsersToProjectsQueryBuilder, userToProjectsSelection} from "./utils";
-import {IUsersToProjectsModel} from "../../Interfaces/IUsersToProjects";
+import {IUsersToProjectsModel} from "../../interfaces/IUsersToProjects";
 import {usersToProjects} from "./schemas";
 import {db} from "../../db/db_connect";
 import {project} from "../../features/Project/schemas";

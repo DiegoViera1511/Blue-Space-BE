@@ -1,12 +1,20 @@
-import {ErrorMessage, validate, validatePartial} from "../../utils";
+import {
+    APIMessage,
+    ErrorMessage,
+    StatusCode,
+    StatusMessage,
+    validate,
+    validatePartial
+} from "../../utils";
 import {Request, Response} from 'express';
-import {ICardModel} from "../../Interfaces/ICardModel";
+import {ICardModel} from "../../interfaces/ICardModel";
 import {
     cardPositionUpdateGteSchema,
     cardPositionUpdateRangeSchema,
     CardQuery,
     cardSchema,
-    updateCardsPositionsSchema, updateCardStateSchema
+    updateCardsPositionsSchema,
+    updateCardStateSchema
 } from "./utils";
 import {card, Card, NewCard} from "./schemas";
 
@@ -19,37 +27,31 @@ export class CardController {
 
     create = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, cardSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, cardSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const cardData: NewCard = {
-                ...result.data
-            };
+            const cardData: NewCard = {...data};
             const newCard = await this.cardModel.create(cardData);
-            res.status(201).json(newCard);
+            res.status(StatusCode.CREATED).json(newCard);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
     getAll = async (req: Request, res: Response) => {
         try {
-            const result = validatePartial(req.query, cardSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validatePartial(req.query, cardSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const cardQuery: CardQuery = {
-                state_id: result.data.state_id,
-                title: result.data.title,
-                text: result.data.text
-            }
+            const cardQuery: CardQuery = {...data}
             const allCards = await this.cardModel.getAll(cardQuery, card.position, true);
-            res.status(200).json(allCards);
+            res.status(StatusCode.OK).json(allCards);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
@@ -57,37 +59,36 @@ export class CardController {
         try {
             const id = req.params.id;
             const cardQuery: CardQuery = {id: id};
-
             const cardFound = await this.cardModel.getById(cardQuery);
             if (!cardFound) {
-                res.status(404).json({message: 'Card not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
-            res.status(200).json(cardFound);
+            res.status(StatusCode.OK).json(cardFound);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
+
     update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const result = validatePartial(req.body, cardSchema);
+            const {data, success, error} = validatePartial(req.body, cardSchema);
             const cardQuery: CardQuery = {id: id};
-
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const cardData: Partial<Card> = {...result.data};
+            const cardData: Partial<Card> = {...data};
             const cardFound = await this.cardModel.getById(cardQuery);
             if (!cardFound) {
-                res.status(404).json({message: 'Card not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             const updatedCard = await this.cardModel.update(cardQuery, cardData);
-            res.status(200).json(updatedCard);
+            res.status(StatusCode.OK).json(updatedCard);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
@@ -97,81 +98,81 @@ export class CardController {
             const cardQuery: CardQuery = {id: id};
             const cardFound = await this.cardModel.getById(cardQuery);
             if (!cardFound) {
-                res.status(404).json({message: 'Card not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             await this.cardModel.delete(cardQuery);
-            res.status(200).json({message: 'Card deleted successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.DELETED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
     updateCardsPositionGte = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, cardPositionUpdateGteSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, cardPositionUpdateGteSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            await this.cardModel.updateCardsPositionGte(result.data.start, result.data.value, result.data.state_id);
-            res.status(200).json({message: 'Cards position updated successfully'});
+            await this.cardModel.updateCardsPositionGte(data.start, data.value, data.state_id);
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.UPDATED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     updateCardsPositionRange = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, cardPositionUpdateRangeSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, cardPositionUpdateRangeSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            await this.cardModel.updateCardsPositionRange(result.data.start, result.data.end, result.data.value, result.data.state_id);
-            res.status(200).json({message: 'Cards position updated successfully'});
+            await this.cardModel.updateCardsPositionRange(data.start, data.end, data.value, data.state_id);
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.UPDATED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     updateCardsPositions = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, updateCardsPositionsSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, updateCardsPositionsSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const cardQuery: CardQuery = {id: result.data.activeCardId};
-            if (result.data.activePosition > result.data.overPosition) {
-                await this.cardModel.updateCardsPositionRange(result.data.overPosition, result.data.activePosition - 1, 1, result.data.state_id);
-                await this.cardModel.update(cardQuery, {position: result.data.overPosition});
-            } else if (result.data.activePosition < result.data.overPosition) {
-                await this.cardModel.updateCardsPositionRange(result.data.activePosition + 1, result.data.overPosition, -1, result.data.state_id);
-                await this.cardModel.update(cardQuery, {position: result.data.overPosition});
+            const cardQuery: CardQuery = {id: data.activeCardId};
+            if (data.activePosition > data.overPosition) {
+                await this.cardModel.updateCardsPositionRange(data.overPosition, data.activePosition - 1, 1, data.state_id);
+                await this.cardModel.update(cardQuery, {position: data.overPosition});
+            } else if (data.activePosition < data.overPosition) {
+                await this.cardModel.updateCardsPositionRange(data.activePosition + 1, data.overPosition, -1, data.state_id);
+                await this.cardModel.update(cardQuery, {position: data.overPosition});
             }
-            res.status(200).json({message: 'Cards positions updated successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.UPDATED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
     updateCardState = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, updateCardStateSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, updateCardStateSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const cardQuery: CardQuery = {id: result.data.activeCardId};
-            await this.cardModel.updateCardsPositionGte(result.data.activePosition + 1, -1, result.data.activeStateId);
-            await this.cardModel.updateCardsPositionGte(result.data.overPosition, 1, result.data.overStateId);
+            const cardQuery: CardQuery = {id: data.activeCardId};
+            await this.cardModel.updateCardsPositionGte(data.activePosition + 1, -1, data.activeStateId);
+            await this.cardModel.updateCardsPositionGte(data.overPosition, 1, data.overStateId);
             await this.cardModel.update(cardQuery, {
-                state_id: result.data.overStateId,
-                position: result.data.overPosition
+                state_id: data.overStateId,
+                position: data.overPosition
             });
-            res.status(200).json({message: 'Card state updated successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.UPDATED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 

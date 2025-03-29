@@ -1,4 +1,4 @@
-import {IUserModel} from "../../Interfaces/IUserModel";
+import {IUserModel} from "../../interfaces/IUserModel";
 import {Router} from "express";
 import {UserController} from "./controller";
 

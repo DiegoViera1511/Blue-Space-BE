@@ -1,6 +1,6 @@
 import {Router} from "express";
 import {StateController} from "./controller";
-import {IStateModel} from "../../Interfaces/IStateModel";
+import {IStateModel} from "../../interfaces/IStateModel";
 
 export const stateRouter = (stateModel: IStateModel) => {
     const router = Router();

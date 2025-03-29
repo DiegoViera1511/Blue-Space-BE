@@ -1,10 +1,10 @@
-import {INotificationModel} from "../../Interfaces/INotificationModel";
+import {INotificationModel} from "../../interfaces/INotificationModel";
 import {Request, Response} from 'express';
-import {ErrorMessage, validate, validatePartial} from "../../utils";
+import {APIMessage, ErrorMessage, SocketEvent, StatusCode, StatusMessage, validate, validatePartial} from "../../utils";
 import {NotificationQuery, notificationSchema} from "./utils";
 import {NewNotification, Notification, notification} from "./schemas";
 import {Server} from "socket.io";
-import {IUserModel} from "../../Interfaces/IUserModel";
+import {IUserModel} from "../../interfaces/IUserModel";
 
 export class NotificationController {
     notificationModel: INotificationModel
@@ -19,43 +19,38 @@ export class NotificationController {
 
     create = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, notificationSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, notificationSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const notificationData: NewNotification = {
-                ...result.data
-            };
+            const notificationData: NewNotification = {...data};
             const newNotification = await this.notificationModel.create(notificationData);
-
-            const user = await this.userModel.getById({username: result.data.receiver_id});
-
-            if (user && user.webSocketToken) {
-                this.socketIO.to(user.webSocketToken as string).emit('notification');
+            const user = await this.userModel.getById({username: data.receiver_id});
+            if (user?.webSocketToken) {
+                const socket = this.socketIO.sockets.sockets.get(user.webSocketToken as string);
+                if (socket) {
+                    this.socketIO.to(user.webSocketToken as string).emit(SocketEvent.NOTIFICATION);
+                }
             }
-
-            res.status(201).json(newNotification);
+            res.status(StatusCode.CREATED).json(newNotification);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     getAll = async (req: Request, res: Response) => {
         try {
-            const result = validatePartial(req.query, notificationSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validatePartial(req.query, notificationSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const notificationQuery: NotificationQuery = {
-                ...result.data
-            }
+            const notificationQuery: NotificationQuery = {...data}
             const allNotifications = await this.notificationModel.getAll(notificationQuery, notification.date, false);
-            res.status(200).json(allNotifications);
-
+            res.status(StatusCode.OK).json(allNotifications);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
@@ -65,34 +60,34 @@ export class NotificationController {
             const notificationQuery: NotificationQuery = {id: id};
             const notificationFound = await this.notificationModel.getById(notificationQuery);
             if (!notificationFound) {
-                res.status(404).json({message: 'Notification not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
-            res.status(200).json(notificationFound);
+            res.status(StatusCode.OK).json(notificationFound);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
     update = async (req: Request, res: Response) => {
         try {
             const id = parseInt(req.params.id);
-            const result = validatePartial(req.body, notificationSchema);
+            const {data, success, error} = validatePartial(req.body, notificationSchema);
             const notificationQuery: NotificationQuery = {id: id};
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const notificationData: Partial<Notification> = {...result.data};
+            const notificationData: Partial<Notification> = {...data};
             const notificationFound = await this.notificationModel.getById(notificationQuery);
             if (!notificationFound) {
-                res.status(404).json({message: 'Notification not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             const updatedNotification = await this.notificationModel.update(notificationQuery, notificationData);
-            res.status(200).json(updatedNotification);
+            res.status(StatusCode.OK).json(updatedNotification);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
@@ -102,13 +97,13 @@ export class NotificationController {
             const notificationQuery: NotificationQuery = {id: id};
             const notificationFound = await this.notificationModel.getById(notificationQuery);
             if (!notificationFound) {
-                res.status(404).json({message: 'Notification not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             await this.notificationModel.delete(notificationQuery);
-            res.status(200).json({message: 'Notification deleted successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.DELETED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 
@@ -117,9 +112,9 @@ export class NotificationController {
             const receiverId = req.params.receiver_id;
             const notificationQuery: NotificationQuery = {receiver_id: receiverId};
             await this.notificationModel.clearAll(notificationQuery);
-            res.status(200).json({message: 'All notifications deleted successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.DELETED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     }
 

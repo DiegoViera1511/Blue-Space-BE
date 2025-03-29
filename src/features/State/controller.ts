@@ -1,8 +1,8 @@
-import {ErrorMessage, validate, validatePartial} from "../../utils";
+import {APIMessage, ErrorMessage, StatusCode, StatusMessage, validate, validatePartial} from "../../utils";
 import {Request, Response} from 'express';
 import {StateQuery, stateSchema} from "./utils";
 import {NewState, state, State} from "./schemas";
-import {IStateModel} from "../../Interfaces/IStateModel";
+import {IStateModel} from "../../interfaces/IStateModel";
 
 export class StateController {
     stateModel: IStateModel;
@@ -13,36 +13,31 @@ export class StateController {
 
     create = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, stateSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, stateSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const stateData: NewState = {
-                ...result.data
-            };
+            const stateData: NewState = {...data};
             const newState = await this.stateModel.create(stateData);
-            res.status(201).json(newState);
+            res.status(StatusCode.CREATED).json(newState);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
     getAll = async (req: Request, res: Response) => {
         try {
-            const result = validatePartial(req.query, stateSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validatePartial(req.query, stateSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const stateQuery: StateQuery = {
-                project_id: result.data.project_id,
-                name: result.data.name
-            }
+            const stateQuery: StateQuery = {...data}
             const allState = await this.stateModel.getAll(stateQuery, state.position, true);
-            res.status(200).json(allState);
+            res.status(StatusCode.OK).json(allState);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
@@ -50,37 +45,35 @@ export class StateController {
         try {
             const id = req.params.id;
             const stateQuery: StateQuery = {id: id};
-
             const stateFound = await this.stateModel.getById(stateQuery);
             if (!stateFound) {
-                res.status(404).json({message: 'Status not found'});
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
-            res.status(200).json(stateFound);
+            res.status(StatusCode.OK).json(stateFound);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
     update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const result = validatePartial(req.body, stateSchema);
+            const {data, success, error} = validatePartial(req.body, stateSchema);
             const stateQuery: StateQuery = {id: id};
-
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const stateData: Partial<State> = {...result.data};
+            const stateData: Partial<State> = {...data};
             const stateFound = await this.stateModel.getById(stateQuery);
             if (!stateFound) {
-                res.status(404).json({message: 'State not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             const updatedState = await this.stateModel.update(stateQuery, stateData);
-            res.status(200).json(updatedState);
+            res.status(StatusCode.OK).json(updatedState);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
@@ -90,13 +83,13 @@ export class StateController {
             const stateQuery: StateQuery = {id: id};
             const stateFound = await this.stateModel.getById(stateQuery);
             if (!stateFound) {
-                res.status(404).json({message: 'State not found'});
+                res.status(StatusCode.NOT_FOUND).json(StatusMessage.NOT_FOUND);
                 return;
             }
             await this.stateModel.delete(stateQuery);
-            res.status(200).json({message: 'State deleted successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.DELETED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 }

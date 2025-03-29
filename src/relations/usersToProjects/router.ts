@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {IUsersToProjectsModel} from "../../Interfaces/IUsersToProjects";
+import {IUsersToProjectsModel} from "../../interfaces/IUsersToProjects";
 import {UsersToProjectsController} from "./controller";
 
 export const usersToProjectsRouter = (usersToProjectsModel: IUsersToProjectsModel) => {

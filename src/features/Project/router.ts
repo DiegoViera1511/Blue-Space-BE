@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {ProjectController} from "./controller";
-import {IProjectModel} from "../../Interfaces/IProjectModel";
-import {IUsersToProjectsModel} from "../../Interfaces/IUsersToProjects";
+import {IProjectModel} from "../../interfaces/IProjectModel";
+import {IUsersToProjectsModel} from "../../interfaces/IUsersToProjects";
 
 export const projectRouter = (projectModel: IProjectModel, usersToProjectsModel: IUsersToProjectsModel) => {
     const router = Router();

@@ -1,6 +1,6 @@
-import {CRUD} from "../../types";
+import {CRUD} from "../../general/crud";
 import {NotificationQuery, NotificationQueryBuilder} from "./utils";
-import {INotificationModel} from "../../Interfaces/INotificationModel";
+import {INotificationModel} from "../../interfaces/INotificationModel";
 import {notification} from "./schemas";
 import {db} from "../../db/db_connect";
 import {and} from "drizzle-orm";
