@@ -3,8 +3,8 @@ POST http://localhost:8080/api/user
 Content-Type: application/json
 
 {
-    "username": "viera",
-    "password": "nqSRJTjt"
+  "username": "viera",
+  "password": "nqSRJTjt"
 }
 
 ###USER GETALL
@@ -18,7 +18,7 @@ PUT http://localhost:8080/api/user/viera
 Content-Type: application/json
 
 {
-  "username" : "candela"
+  "username": "candela"
 }
 
 ###USER DELETE
@@ -49,7 +49,7 @@ PUT http://localhost:8080/api/card/813e498d-2ecf-4509-b544-2ccc90fc0802
 Content-Type: application/json
 
 {
-  "title" : "fix task"
+  "title": "fix task"
 }
 
 ###CARD POSITION GTE
@@ -101,7 +101,7 @@ PUT http://localhost:8080/api/project/813e498d-2ecf-4509-b544-2ccc90fc0802
 Content-Type: application/json
 
 {
-  "name" : "SCRUM"
+  "name": "SCRUM"
 }
 
 
@@ -128,7 +128,7 @@ PUT http://localhost:8080/api/state/813e498d-2ecf-4509-b544-2ccc90fc0802
 Content-Type: application/json
 
 {
-  "name" : "in progress"
+  "name": "in progress"
 }
 
 ###STATE DELETE

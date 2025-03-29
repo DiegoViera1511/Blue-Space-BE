@@ -4,12 +4,12 @@ import {user} from "../User/schemas";
 import {pgEnum} from "drizzle-orm/pg-core/columns/enum";
 import {projectsColors} from "../../enums";
 
-export const colors = pgEnum('colors',projectsColors)
+export const colors = pgEnum('colors', projectsColors)
 
 export const project = pgTable('project', {
     id: uuid('id').primaryKey().defaultRandom(),
-    username: varchar('username').references(() => user.username, { onDelete: 'cascade', onUpdate: 'cascade' }).notNull(),
-    name: varchar('name', { length: 255 }).notNull(),
+    username: varchar('username').references(() => user.username, {onDelete: 'cascade', onUpdate: 'cascade'}).notNull(),
+    name: varchar('name', {length: 255}).notNull(),
     color: colors('color').default(projectsColors[0]).notNull()
 });
 

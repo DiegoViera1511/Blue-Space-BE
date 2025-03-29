@@ -5,6 +5,7 @@ import {appRouter} from './router';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import {Models} from "./types";
+import {SocketEvent} from "./utils";
 
 dotenv.config();
 
@@ -20,9 +21,9 @@ export const createApp = (appModels: Models) => {
         }
     })
     app.use('/api', appRouter(appModels, io));
-    io.on('connection', (socket) => {
+    io.on(SocketEvent.CONNECTION, (socket) => {
         console.log('client connected to: ' + socket.id);
-        socket.on('register', (username) => {
+        socket.on(SocketEvent.REGISTER, (username) => {
             appModels.userModel.update({username: username}, {webSocketToken: socket.id})
         })
     })

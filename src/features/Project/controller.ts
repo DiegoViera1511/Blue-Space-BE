@@ -1,9 +1,9 @@
-import {ErrorMessage, validate, validatePartial} from "../../utils";
+import {APIMessage, ErrorMessage, StatusCode, StatusMessage, validate, validatePartial} from "../../utils";
 import {Request, Response} from 'express';
 import {ProjectQuery, projectSchema} from "./utils";
 import {NewProject, project, Project} from "./schemas";
-import {IProjectModel} from "../../Interfaces/IProjectModel";
-import {IUsersToProjectsModel} from "../../Interfaces/IUsersToProjects";
+import {IProjectModel} from "../../interfaces/IProjectModel";
+import {IUsersToProjectsModel} from "../../interfaces/IUsersToProjects";
 
 export class ProjectController {
     projectModel: IProjectModel;
@@ -16,36 +16,31 @@ export class ProjectController {
 
     create = async (req: Request, res: Response) => {
         try {
-            const result = validate(req.body, projectSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validate(req.body, projectSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const projectData: NewProject = {
-                ...result.data
-            };
+            const projectData: NewProject = {...data};
             const newProject = await this.projectModel.create(projectData)
-            res.status(201).json(newProject);
+            res.status(StatusCode.CREATED).json(newProject);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
     getAll = async (req: Request, res: Response) => {
         try {
-            const result = validatePartial(req.query, projectSchema);
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            const {data, success, error} = validatePartial(req.query, projectSchema);
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const projectQuery: ProjectQuery = {
-                username: result.data.username,
-                name: result.data.name
-            }
+            const projectQuery: ProjectQuery = {...data}
             const allProjects = await this.projectModel.getAll(projectQuery, project.name, true);
-            res.status(200).json(allProjects);
+            res.status(StatusCode.OK).json(allProjects);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
@@ -53,37 +48,36 @@ export class ProjectController {
         try {
             const id = req.params.id;
             const projectQuery: ProjectQuery = {id: id};
-
             const projectFound = await this.projectModel.getById(projectQuery);
             if (!projectFound) {
-                res.status(404).json({message: 'Project not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
-            res.status(200).json(projectFound);
+            res.status(StatusCode.OK).json(projectFound);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
+
     update = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const result = validatePartial(req.body, projectSchema);
+            const {data, success, error} = validatePartial(req.body, projectSchema);
             const projectQuery: ProjectQuery = {id: id};
-
-            if (!result.success) {
-                res.status(400).json({message: JSON.parse(result.error.message)});
+            if (!success) {
+                res.status(StatusCode.BAD_REQUEST).json(APIMessage(error.message));
                 return;
             }
-            const projectData: Partial<Project> = {...result.data};
+            const projectData: Partial<Project> = {...data};
             const projectFound = await this.projectModel.getById(projectQuery);
             if (!projectFound) {
-                res.status(404).json({message: 'Project not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             const updatedProject = await this.projectModel.update(projectQuery, projectData);
-            res.status(200).json(updatedProject);
+            res.status(StatusCode.OK).json(updatedProject);
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 
@@ -93,13 +87,13 @@ export class ProjectController {
             const projectQuery: ProjectQuery = {id: id};
             const projectFound = await this.projectModel.getById(projectQuery);
             if (!projectFound) {
-                res.status(404).json({message: 'Project not found'});
+                res.status(StatusCode.NOT_FOUND).json(APIMessage(StatusMessage.NOT_FOUND));
                 return;
             }
             await this.projectModel.delete(projectQuery);
-            res.status(200).json({message: 'Project deleted successfully'});
+            res.status(StatusCode.OK).json(APIMessage(StatusMessage.DELETED));
         } catch (e) {
-            res.status(500).json(ErrorMessage(e));
+            res.status(StatusCode.SERVER_ERROR).json(ErrorMessage(e));
         }
     };
 }

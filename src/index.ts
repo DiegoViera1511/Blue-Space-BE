@@ -4,7 +4,7 @@ import {CardModel} from "./features/Card/model";
 import {ProjectModel} from "./features/Project/model";
 import {StateModel} from "./features/State/model";
 import {NotificationModel} from "./features/Notification/model";
-import {UsersToProjectsModel} from "./relations/UsersToProjects/model";
+import {UsersToProjectsModel} from "./relations/usersToProjects/model";
 
 const appModels = {
     userModel: new UserModel(),

@@ -5,7 +5,7 @@ import {cardRouter} from "./features/Card/router";
 import {projectRouter} from "./features/Project/router";
 import {stateRouter} from "./features/State/router";
 import {notificationRouter} from "./features/Notification/router";
-import {usersToProjectsRouter} from "./relations/UsersToProjects/router";
+import {usersToProjectsRouter} from "./relations/usersToProjects/router";
 import {Server} from "socket.io";
 
 export const appRouter = (appModels: Models, socketIO: Server) => {

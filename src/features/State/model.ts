@@ -1,10 +1,10 @@
-import {CRUD} from "../../types";
-import { StateQuery, StateQueryBuilder} from "./utils";
+import {CRUD} from "../../general/crud";
+import {StateQuery, StateQueryBuilder} from "./utils";
 import {state} from "./schemas";
-import {IStateModel} from "../../Interfaces/IStateModel";
+import {IStateModel} from "../../interfaces/IStateModel";
 
 export class StateModel extends CRUD<StateQuery> implements IStateModel {
     constructor() {
-        super(state , StateQueryBuilder);
+        super(state, StateQueryBuilder);
     }
 }

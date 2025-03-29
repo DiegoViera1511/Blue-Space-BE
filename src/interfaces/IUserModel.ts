@@ -1,4 +1,4 @@
-import {CRUD} from "../types";
+import {CRUD} from "../general/crud";
 import {UserQuery} from "../features/User/utils";
 import { User } from "../features/User/schemas";
 

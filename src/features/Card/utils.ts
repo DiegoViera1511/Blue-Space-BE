@@ -5,10 +5,10 @@ import {card} from "./schemas";
 export type CardQuery = {
     id?: string;
     position?: number;
-    state_id?:string;
-    title?:string;
-    text?:string;
-    user_card?:string
+    state_id?: string;
+    title?: string;
+    text?: string;
+    user_card?: string | null
 };
 
 export const cardSchema = z.object({
@@ -53,7 +53,7 @@ export function CardQueryBuilder(query: CardQuery): SQL[] {
     if (query.position) filters.push(eq(card.position, query.position));
     if (query.state_id) filters.push(eq(card.state_id, query.state_id));
     if (query.title) filters.push(eq(card.title, query.title));
-    if (query.text) filters.push(eq(card.text,query.text));
+    if (query.text) filters.push(eq(card.text, query.text));
     if (query.user_card) filters.push(eq(card.user_card, query.user_card));
     return filters;
 }

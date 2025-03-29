@@ -1,8 +1,8 @@
 import {Router} from "express";
-import {INotificationModel} from "../../Interfaces/INotificationModel";
+import {INotificationModel} from "../../interfaces/INotificationModel";
 import {NotificationController} from "./controller";
 import {Server} from "socket.io";
-import {IUserModel} from "../../Interfaces/IUserModel";
+import {IUserModel} from "../../interfaces/IUserModel";
 
 export const notificationRouter = (notificationModel: INotificationModel, userModel: IUserModel, socketIO: Server) => {
     const router = Router();
