@@ -11,7 +11,7 @@ import {Server} from "socket.io";
 export const appRouter = (appModels: Models, socketIO: Server) => {
     const router = Router();
     router.use('/user', userRouter(appModels.userModel));
-    router.use('/card', cardRouter(appModels.cardModel));
+    router.use('/card', cardRouter(appModels.cardModel, appModels.stateModel, appModels.userModel));
     router.use('/project', projectRouter(appModels.projectModel, appModels.usersToProjectsModel));
     router.use('/state', stateRouter(appModels.stateModel));
     router.use('/notification', notificationRouter(appModels.notificationModel, appModels.userModel, socketIO));

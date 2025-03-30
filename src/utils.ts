@@ -1,4 +1,5 @@
 import {ZodObject, ZodRawShape, ZodSchema} from "zod";
+import {APIResponseType} from "./types";
 
 export function validate<T>(object: any, schema: ZodSchema<T>) {
     return schema.safeParse(object);
@@ -9,7 +10,7 @@ export function validatePartial<T extends ZodRawShape>(object: any, schema: ZodO
 }
 
 export const ErrorMessage = (e: any) => {
-    return {message: e instanceof Error ? e.message : 'An unknown error occurred'};
+    return  e instanceof Error ? e.message : 'An unknown error occurred';
 };
 
 export enum StatusCode {
@@ -27,13 +28,19 @@ export const APIMessage =  (message: string) => {
 };
 
 export enum StatusMessage {
+    BAD_REQUEST = "Bad request",
     NOT_FOUND = "Not found",
     NO_CONTENT = "No content",
     DELETED = "Deleted successfully",
     CREATED = "Created successfully",
     UPDATED = "Updated successfully",
-    UNAUTHORIZED = "Unauthorized"
-    
+    UNAUTHORIZED = "Unauthorized",
+    SERVER_ERROR = "Server error",
+    OK = "OK"
+}
+
+export const BuildMessage = (status: StatusMessage, message: string) => {
+    return APIMessage (`${status}: ${message}`);
 }
 
 export enum SocketEvent {
@@ -42,3 +49,10 @@ export enum SocketEvent {
     CONNECTION = "connection"
 }
 
+export  function APIResponse (message: string, errors?: string | null, data?: any | null) : APIResponseType {
+    return {
+        data: data ?? null,
+        message: message,
+        errors: errors ?? null
+    }
+}
