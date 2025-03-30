@@ -16,3 +16,9 @@ export type Models = {
 };
 
 export type QueryBuilder<TQuery> = (keys: TQuery) => SQL[]
+
+export type APIResponseType = {
+    data?: any | null;
+    message: string;
+    errors?: string | null;
+}
